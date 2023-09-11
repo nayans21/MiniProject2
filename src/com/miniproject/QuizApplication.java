@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
@@ -204,10 +205,12 @@ public class QuizApplication {
 	public int startQuiz(StudentOperation studentOperation) throws SQLException, NoDataFoundException {
 		ArrayList<Question> quizQuestions = studentOperation.getQuizQuestions();
 		int score = 0;
-		int studentAnswer=0;
-		int answer=0;
-		for(Question question : quizQuestions) {
+		String studentAnswer="";
+		String answer="";
+		ListIterator<Question> litr = quizQuestions.listIterator();
+		while(litr.hasNext()) {
 			System.out.println();
+			Question question = litr.next();
 			System.out.println(question.getQuestionString());
 			for(int i=1;i<=4;i++) {
 				System.out.print(i + ". ");
@@ -224,29 +227,49 @@ public class QuizApplication {
 			for(int i=1;i<=4;i++) {
 				if(i==1) {
 					value = question.getOption1().getIsAnswer();
-					if(value.compareTo("yes")==0)
-						answer = 1;
+					if(value.compareTo("yes")==0) {
+						answer = "1";
+						break;
+					}
 				}
 				else if(i==2) {
 					value = question.getOption2().getIsAnswer();
-					if(value.compareTo("yes")==0)
-						answer = 2;
+					if(value.compareTo("yes")==0) {
+						answer = "2";
+						break;
+					}
 				}
 				else if(i==3) {
 					value = question.getOption3().getIsAnswer();
-					if(value.compareTo("yes")==0)
-						answer = 3;
+					if(value.compareTo("yes")==0) {
+						answer = "3";
+						break;
+					}	
 				}
 				else if(i==4) {
 					value = question.getOption4().getIsAnswer();
-					if(value.compareTo("yes")==0)
-						answer = 4;
+					if(value.compareTo("yes")==0) {
+						answer = "4";
+						break;
+					}
 				}
 			}
 			System.out.print("Type Option No : ");
-			studentAnswer = scanner.nextInt();
-			if(studentAnswer == answer)
-				score++;
+			studentAnswer = scanner.next();
+			int flag=0;
+			switch(studentAnswer) {
+			case "1":
+			case "2":
+			case "3":
+			case "4":flag=1;break;
+			default: System.out.println("\nPlease Enter Valid Option Number.");
+			}
+			if(flag==1) {
+				if(studentAnswer.compareTo(answer)==0)
+					score++;
+			}
+			else
+				litr.previous();
 		}
 		System.out.println();
 		System.out.println("You have Successfully Completed the Quiz.");
@@ -264,7 +287,7 @@ public class QuizApplication {
 	}
 	
 	public void performStudentOperations() {
-		int choice;
+		String choice;
 		System.out.println();
 		String title = "Welcome User "+ quizUser.getUsername();
 		displayTitle(title,title.length()+4);
@@ -278,31 +301,31 @@ public class QuizApplication {
 			System.out.println("3. Display Quiz Result");
 			System.out.println("4. Logout");
 			System.out.print("Enter your Option : ");
-			choice = scanner.nextInt();
+			choice = scanner.next();
 			
 			try {
 				switch(choice) {
-				case 1:studentQuizScore = startQuiz(studentOperation);
-					   studentPlayedQuiz = true;
-				       break;
-				case 2:if(studentPlayedQuiz) {
-					   	insertQuizResultIntoDB(studentOperation,studentQuizScore);
-					   	studentPlayedQuiz = false;
-					   	studentQuizScore = 0;
-						}
-				       else {
+				case "1":studentQuizScore = startQuiz(studentOperation);
+					     studentPlayedQuiz = true;
+				         break;
+				case "2":if(studentPlayedQuiz) {
+					   	 insertQuizResultIntoDB(studentOperation,studentQuizScore);
+					   	 studentPlayedQuiz = false;
+					   	 studentQuizScore = 0;
+						 }
+				         else {
 				    	   System.out.println();
 				    	   System.out.println("Please start the quiz first.");
-				       }
-				       break;
-				case 3:getQuizResult(studentOperation);
-					   break;
-				case 4:studentOperation = null;
-			           quizUser = null;
-			           System.out.println();
-				       System.out.println("You have successfully logged out.");
-				       System.out.println("\n*********************************************************");
-				       break;
+				         }
+				         break;
+				case "3":getQuizResult(studentOperation);
+					     break;
+				case "4":studentOperation = null;
+			             quizUser = null;
+			             System.out.println();
+				         System.out.println("You have successfully logged out.");
+				         System.out.println("\n*********************************************************");
+				         break;
 				default : String errMessage = "Please enter valid option";
          		 		  throw new InvalidInputException(errMessage);
 				}
@@ -320,7 +343,7 @@ public class QuizApplication {
 				e.printStackTrace();
 			}
 			
-		}while(choice!=4);
+		}while(choice.compareTo("4")!=0);
 	}
 	
 	public void printStudentsScoreInTableFormat(String[] columns,LinkedList<HashMap<String,Object>> list,int size) {
@@ -520,7 +543,7 @@ public class QuizApplication {
 	}
 	
 	public void performAdminOperations(){
-		int choice;
+		String choice;
 		System.out.println();
 		String title = "Welcome Admin "+ quizUser.getUsername();
 		displayTitle(title,title.length()+4);
@@ -533,18 +556,18 @@ public class QuizApplication {
 			System.out.println("3. Add question with 4 options into database");
 			System.out.println("4. Logout");
 			System.out.print("Enter your Option : ");
-			choice = scanner.nextInt();
+			choice = scanner.next();
 			try {
 				switch(choice) {
-				case 1:displayStudentsScoreByASCOrder(admin);break;
-				case 2:fetchStudentScoreByID(admin);break;
-				case 3:insertQuestionToDB(admin);break;
-				case 4:admin = null;
-				       quizUser = null;
-				       System.out.println();
-					   System.out.println("You have successfully logged out.");
-					   System.out.println("\n******************************************************");
-					   break;
+				case "1":displayStudentsScoreByASCOrder(admin);break;
+				case "2":fetchStudentScoreByID(admin);break;
+				case "3":insertQuestionToDB(admin);break;
+				case "4":admin = null;
+				         quizUser = null;
+				         System.out.println();
+					     System.out.println("You have successfully logged out.");
+					     System.out.println("\n******************************************************");
+					     break;
 			    default : String errMessage = "Please enter valid option";
 		          		 throw new InvalidInputException(errMessage);
 				}
@@ -562,7 +585,7 @@ public class QuizApplication {
 				e.printStackTrace();
 			}
 			
-		}while(choice!=4);
+		}while(choice.compareTo("4")!=0);
 	}
 	
 	public void displayTitle(String title,int cnt) {
@@ -594,7 +617,7 @@ public class QuizApplication {
 		String title = "Welcome To Quiz Application";
 		app.displayTitle(title,title.length()+4);
 		System.out.println();
-		int choice;
+		String choice;
 		QuizApplication.setScanner();
 		
 		do {
@@ -604,18 +627,18 @@ public class QuizApplication {
 			System.out.println("2. User Login");
 			System.out.println("3. Exit");
 			System.out.print("Enter your Option : ");
-			choice = scanner.nextInt();
+			choice = scanner.next();
 			try {
 				switch(choice) {
-				case 1 : app.doStudentRegistration();
+				case "1" : app.doStudentRegistration();
 						 break;
-				case 2 : app.getLoginDetails();
+				case "2" : app.getLoginDetails();
 						 if(quizUser.getUsertype().equals("student"))
 							 app.performStudentOperations();
 						 else if(quizUser.getUsertype().equals("admin"))
 							 app.performAdminOperations();
 						 break;
-				case 3 : System.out.println();
+				case "3" : System.out.println();
 						 System.out.println("Thanks for Using Quiz Application.");
 						 break;
 				default : String errMessage = "Please enter valid option";
@@ -638,6 +661,6 @@ public class QuizApplication {
 				System.out.println();
 				e.printStackTrace();
 			}
-		}while(choice!=3);
+		}while(choice.compareTo("3")!=0);
 	}
 }
