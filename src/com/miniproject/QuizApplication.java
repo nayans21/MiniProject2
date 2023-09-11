@@ -104,54 +104,99 @@ public class QuizApplication {
 		*/
 	}
 	
-	public void getQuizResult(StudentOperation studentOperation) throws SQLException, NoDataFoundException {
+	public void printQuizScoreInTableFormat(String[] columns,ArrayList<QuizResult> data,int size) {
 		
-		int studentID = studentOperation.getStudentID(quizUser.getUserid());
-		ArrayList<QuizResult> quizResult = studentOperation.displayQuizResult(studentID);
-		System.out.println();
+		int columnsSize = 0;
+		
+		for(int i=0;i<columns.length;i++)
+			columnsSize = columnsSize + columns[i].length();
+		
+		int lines = columnsSize + (columns.length)*4 + 2;
 		
 		System.out.println("Your Score is as follows : ");
 		System.out.println();
-		
-		String str = "  QuizID  Score  QuizDate    ";
-		int cnt = str.length();
 		// Line 1
 		System.out.print("+");
-		for(int i=1;i<=cnt;i++)
+		for(int i=1;i<=lines;i++)
 			System.out.print("-");
 		System.out.println("+");
 		
-		System.out.print("| ");
-		System.out.print("QuizID");
-		System.out.print(" | ");
-		System.out.print("Score");
-		System.out.print(" | ");
-		System.out.print(" QuizDate ");
-		System.out.println(" |");
+		// Printing Headers of a Table
+		String format = "%" + (size-4) + "s";
+		for(int i=0;i<columns.length;i++) {
+			System.out.print("|  ");
+			
+			System.out.printf(format,columns[i]);
+	
+			System.out.print("  ");
+		}	
+		
+		System.out.println("|");
 		
 		System.out.print("+");
-		for(int i=1;i<=cnt;i++)
+		for(int i=1;i<=lines;i++)
 			System.out.print("-");
 		System.out.println("+");
 		
-		
 		// Line 2
-		for(QuizResult result : quizResult) {
-			System.out.print("| ");
-			System.out.printf("%6s",result.getQuizID());
-			System.out.print(" | ");
-			System.out.printf("%5s",result.getScore());
-			System.out.print(" | ");
-			System.out.printf("%10s",result.getQuizDate());
-			System.out.print(" | ");
+		
+		for(QuizResult result : data) {
+			
+			if(columns[0].length()>=String.valueOf(result.getQuizID()).length()) {
+				System.out.print("|  ");
+				String colFormat = "%" + columns[0].length() + "s";
+				System.out.printf(colFormat,result.getQuizID());
+				System.out.print("  ");
+			}
+			else {
+				System.out.print("|");
+				System.out.print(result.getQuizID());
+				System.out.print("  ");
+			}
+			if(columns[1].length()>=String.valueOf(result.getScore()).length()) {
+				System.out.print("|  ");
+				String colFormat = "%" + columns[1].length() + "s";
+				System.out.printf(colFormat,result.getScore());
+				System.out.print("  ");
+			}
+			else {
+				System.out.print("|");
+				System.out.print(result.getScore());
+				System.out.print("  ");
+			}	
+			if(columns[2].length()>=String.valueOf(result.getQuizDate()).length()) {
+				System.out.print("|  ");
+				String colFormat = "%" + columns[2].length() + "s";
+				System.out.printf(colFormat,result.getQuizDate());
+				System.out.print("  ");
+			}
+			else {
+				System.out.print("| ");
+				System.out.print(result.getQuizDate());
+				System.out.print("  ");
+			}	
+			System.out.print("|");
 			System.out.println();
 		}
 		
 		// Line 3
 		System.out.print("+");
-		for(int i=1;i<=cnt;i++)
+		for(int i=1;i<=lines;i++)
 			System.out.print("-");
-		System.out.print("+");
+		System.out.print("+");		
+		System.out.println();
+	}
+	
+	public void getQuizResult(StudentOperation studentOperation) throws SQLException, NoDataFoundException {
+		
+		int studentID = studentOperation.getStudentID(quizUser.getUserid());
+		ArrayList<QuizResult> quizResult = studentOperation.displayQuizResult(studentID);
+		System.out.println();
+		String [] columns = new String[3];
+		columns[0]="QuizID";
+		columns[1]="Quiz Score";
+		columns[2]="Quiz Date";
+		printQuizScoreInTableFormat(columns, quizResult, 10);
 		
 	}
 	
@@ -272,104 +317,132 @@ public class QuizApplication {
 		}while(choice!=4);
 	}
 	
-	public void displayStudentsScoreByASCOrder(AdminOperation admin) throws SQLException {
+	public void printStudentsScoreInTableFormat(String[] columns,LinkedList<HashMap<String,Object>> list,int size) {
 		
-		LinkedList<HashMap<String,Object>> list = admin.getStudentsScoreByASCOrder();
-				 
+		int columnsSize = 0;
+		
+		for(int i=0;i<columns.length;i++)
+			columnsSize = columnsSize + columns[i].length();
+		
+		int lines = columnsSize + (columns.length)*4 + 3;
+		
 		System.out.println();
-		String str = "  FirstName  LastName  Score  QuizDate    ";
-		int cnt = str.length();
-		cnt = cnt + 32;
 		// Line 1
 		System.out.print("+");
-		for(int i=1;i<=cnt;i++)
-			System.out.print("-");
-		System.out.println("+");	
-		System.out.print("| ");
-		System.out.printf("%20s","FirstName");
-		System.out.print(" | ");
-		System.out.printf("%20s","LastName");
-		System.out.print(" | ");
-		System.out.printf("%8s","Score");
-		System.out.print(" | ");
-		System.out.printf("%15s","Quiz Date");
-		System.out.print(" |");
-		System.out.println();
-		
-		System.out.print("+");
-		for(int i=1;i<=cnt;i++)
+		for(int i=1;i<=lines;i++)
 			System.out.print("-");
 		System.out.println("+");
+		
+		// Printing Headers of a Table
+		String format = "%" + (size-4) + "s";
+		for(int i=0;i<columns.length;i++) {
+			if(size>=columns[i].length()) {
+				System.out.print("|  ");
+				int newSize = (size-2) - columns[i].length();
+				String newFormat = "%" + newSize + "s";
+				System.out.printf(newFormat,columns[i]);
+				System.out.print("  ");
+			}
+			else {
+				System.out.print("| ");
+				System.out.print(columns[i]);
+				System.out.print("  ");
+			}
+		}	
+		
+		System.out.println("|");
+		
+		System.out.print("+");
+		for(int i=1;i<=lines;i++)
+			System.out.print("-");
+		System.out.println("+");
+		
+		// Line 2
 		
 		for(HashMap<String,Object> ele : list) {
 			
 			Student student = (Student) ele.get("studentInfo");
 			QuizResult quizResult = (QuizResult) ele.get("quizInfo");
-			System.out.print("| ");
-			System.out.printf("%20s",student.getFirstName());
-			System.out.print(" | ");
-			System.out.printf("%20s",student.getLastName());
-			System.out.print(" | ");
-			System.out.printf("%8s",quizResult.getScore());
-			System.out.print(" | ");
-			System.out.printf("%15s",quizResult.getQuizDate());
-			System.out.print(" |");
+			
+			if(columns[0].length()>=student.getFirstName().length()) {
+				System.out.print("|  ");
+				String colFormat = "%" + columns[0].length() + "s";
+				System.out.printf(colFormat,student.getFirstName());
+				System.out.print("  ");
+			}
+			else {
+				System.out.print("|");
+				System.out.print(student.getFirstName());
+				System.out.print("  ");
+			}
+			if(columns[1].length()>=student.getLastName().length()) {
+				System.out.print("|  ");
+				String colFormat = "%" + columns[1].length() + "s";
+				System.out.printf(colFormat,student.getLastName());
+				System.out.print("  ");
+			}
+			else {
+				System.out.print("|");
+				System.out.print(student.getLastName());
+				System.out.print("  ");
+			}	
+			if(columns[2].length()>=String.valueOf(quizResult.getScore()).length()) {
+				System.out.print("|  ");
+				String colFormat = "%" + columns[2].length() + "s";
+				System.out.printf(colFormat,quizResult.getScore());
+				System.out.print("  ");
+			}
+			else {
+				System.out.print("| ");
+				System.out.print(quizResult.getScore());
+				System.out.print("  ");
+			}
+			if(columns[3].length()>=String.valueOf(quizResult.getQuizDate()).length()) {
+				System.out.print("|  ");
+				String colFormat = "%" + columns[3].length() + "s";
+				System.out.printf(colFormat,quizResult.getQuizDate());
+				System.out.print("  ");
+			}
+			else {
+				System.out.print("| ");
+				System.out.print(quizResult.getQuizDate());
+				System.out.print("  ");
+			}
+			System.out.print("|");
 			System.out.println();
 		}
 		
 		// Line 3
 		System.out.print("+");
-		for(int i=1;i<=cnt;i++)
+		for(int i=1;i<=lines;i++)
 			System.out.print("-");
 		System.out.print("+");		
+		System.out.println();
+	}
+	
+	public void displayStudentsScoreByASCOrder(AdminOperation admin) throws SQLException {
+		
+		LinkedList<HashMap<String,Object>> list = admin.getStudentsScoreByASCOrder();
+		String [] columns = new String [4];
+		columns[0] = "First Name";
+		columns[1] = "Last Name";
+		columns[2] = "Quiz Score";
+		columns[3] = "Quiz Date";
+		printStudentsScoreInTableFormat(columns, list, 20);		 
 	}
 	
 	public void fetchStudentScoreByID(AdminOperation admin) throws SQLException, NoDataFoundException {
 		
 		System.out.print("Enter Student ID : ");
 		int id = scanner.nextInt();
-		int score=0;
 		ArrayList<QuizResult> quizResult = admin.getStudentScoreByID(id);
+		String [] columns = new String [3];
+		columns[0] = "QuizID";
+		columns[1] = "Quiz Score";
+		columns[2] = "Quiz Date";
+		
+		printQuizScoreInTableFormat(columns, quizResult, 10);
 		System.out.println();
-		String str = "  QuizID  Score  QuizDate    ";
-		int cnt = str.length();
-		// Line 1
-		System.out.print("+");
-		for(int i=1;i<=cnt;i++)
-			System.out.print("-");
-		System.out.println("+");
-		
-		System.out.print("| ");
-		System.out.print("QuizID");
-		System.out.print(" | ");
-		System.out.print("Score");
-		System.out.print(" | ");
-		System.out.print(" QuizDate ");
-		System.out.println(" |");
-		
-		System.out.print("+");
-		for(int i=1;i<=cnt;i++)
-			System.out.print("-");
-		System.out.println("+");
-		
-		
-		// Line 2
-		for(QuizResult result : quizResult) {
-			System.out.print("| ");
-			System.out.printf("%6s",result.getQuizID());
-			System.out.print(" | ");
-			System.out.printf("%5s",result.getScore());
-			System.out.print(" | ");
-			System.out.printf("%10s",result.getQuizDate());
-			System.out.print(" | ");
-			System.out.println();
-		}
-		
-		// Line 3
-		System.out.print("+");
-		for(int i=1;i<=cnt;i++)
-			System.out.print("-");
-		System.out.print("+");
 	}
 	
 	public void insertQuestionToDB(AdminOperation admin) throws SQLException, InvalidInputException {

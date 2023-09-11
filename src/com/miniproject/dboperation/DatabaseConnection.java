@@ -9,8 +9,7 @@ public class DatabaseConnection {
 	public Connection getConnection() {
 		Connection connection = null;
 		FileInputStream fis = null;
-		String filePath = "E:\\MiniProject2\\QuizApplication\\src"
-				+ "\\com\\miniproject\\dboperation\\Database Variables.properties";
+		String filePath = "D:\\MiniProject2\\src\\com\\miniproject\\dboperation\\Database Variables.properties";
 		try {
 			fis = new FileInputStream(filePath);
 			Properties properties= new Properties(); 
