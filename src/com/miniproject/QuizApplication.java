@@ -1,4 +1,5 @@
 package com.miniproject;
+import java.io.Console;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -249,6 +250,7 @@ public class QuizApplication {
 		}
 		System.out.println();
 		System.out.println("You have Successfully Completed the Quiz.");
+		System.out.println("Your Score is : " + score + " out of " + quizQuestions.size());
 		return score;
 	}
 	
@@ -258,7 +260,7 @@ public class QuizApplication {
 		int studentID = studentOperation.getStudentID(quizUser.getUserid());
 		studentOperation.storeQuizResult(studentID, score);
 		System.out.println();
-		System.out.println("Your score is added into databse.");
+		System.out.println("Your score is added into the databse.");
 	}
 	
 	public void performStudentOperations() {
@@ -271,7 +273,7 @@ public class QuizApplication {
 		boolean studentPlayedQuiz = false;
 		do {
 			System.out.println("\nChoose Any of the below Option");
-			System.out.println("1. Display the List of Questions");
+			System.out.println("1. Start the Quiz");
 			System.out.println("2. Store Quiz Result into Database");
 			System.out.println("3. Display Quiz Result");
 			System.out.println("4. Logout");
@@ -301,6 +303,8 @@ public class QuizApplication {
 				       System.out.println("You have successfully logged out.");
 				       System.out.println("\n*********************************************************");
 				       break;
+				default : String errMessage = "Please enter valid option";
+         		 		  throw new InvalidInputException(errMessage);
 				}
 			}catch(NoDataFoundException e) {
 				System.out.println();
@@ -308,11 +312,13 @@ public class QuizApplication {
 			}catch(SQLException e) {
 				System.out.println();
 				e.printStackTrace();
+			}catch(InvalidInputException e) {
+				System.out.println();
+				System.out.println(e.getMessage());
 			}catch(Exception e) {
 				System.out.println();
 				e.printStackTrace();
 			}
-			
 			
 		}while(choice!=4);
 	}
@@ -333,8 +339,6 @@ public class QuizApplication {
 			System.out.print("-");
 		System.out.println("+");
 		
-		// Printing Headers of a Table
-		String format = "%" + (size-4) + "s";
 		for(int i=0;i<columns.length;i++) {
 			if(size>=columns[i].length()) {
 				System.out.print("|  ");
@@ -431,10 +435,17 @@ public class QuizApplication {
 		printStudentsScoreInTableFormat(columns, list, 20);		 
 	}
 	
-	public void fetchStudentScoreByID(AdminOperation admin) throws SQLException, NoDataFoundException {
+	public void fetchStudentScoreByID(AdminOperation admin) 
+			throws SQLException, NoDataFoundException, InvalidInputException {
 		
 		System.out.print("Enter Student ID : ");
-		int id = scanner.nextInt();
+		String str = scanner.next();
+		for(int i=0;i<str.length();i++) {
+			if(!Character.isDigit(str.charAt(i)))
+				throw new InvalidInputException("Student ID must be an Positive Integer Value");
+		}
+			
+		int id = Integer.parseInt(str);
 		ArrayList<QuizResult> quizResult = admin.getStudentScoreByID(id);
 		String [] columns = new String [3];
 		columns[0] = "QuizID";
@@ -531,19 +542,24 @@ public class QuizApplication {
 				case 4:admin = null;
 				       quizUser = null;
 				       System.out.println();
-					   System.out.println("You have successfully Logout.");
+					   System.out.println("You have successfully logged out.");
 					   System.out.println("\n******************************************************");
 					   break;
+			    default : String errMessage = "Please enter valid option";
+		          		 throw new InvalidInputException(errMessage);
 				}
 			}catch(NoDataFoundException e) {
 				System.out.println();
 				System.out.println(e.getMessage());
 			}catch(SQLException e) {
 				System.out.println();
+				e.printStackTrace();
+			}catch(InvalidInputException e) {
+				System.out.println();
 				System.out.println(e.getMessage());
 			}catch(Exception e) {
 				System.out.println();
-				System.out.println(e.getMessage());
+				e.printStackTrace();
 			}
 			
 		}while(choice!=4);
@@ -602,6 +618,8 @@ public class QuizApplication {
 				case 3 : System.out.println();
 						 System.out.println("Thanks for Using Quiz Application.");
 						 break;
+				default : String errMessage = "Please enter valid option";
+				          throw new InvalidInputException(errMessage);
 					}
 
 			}catch(NoDataFoundException e) {
